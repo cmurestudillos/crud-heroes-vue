@@ -8,7 +8,7 @@
     </h1>
     <hr />
 
-    <div class="row text-right">
+    <div class="row text-end">
       <div class="col">
         <router-link :to="'/heroes'" class="btn btn-outline-primary" title="Volver">
           <font-awesome-icon icon="arrow-left" /> Volver
@@ -18,27 +18,27 @@
 
     <div class="row">
       <div class="col">
-        <form @submit.prevent="guardar" v-if="!cargando">
+        <form v-if="!cargando" @submit.prevent="guardar">
           <div class="form-group">
             <label>ID MongoDB</label>
-            <input type="text" class="form-control" placeholder="ID MongoDB" v-model="heroe._id" name="_id" disabled />
+            <input v-model="heroe._id" type="text" class="form-control" placeholder="ID MongoDB" name="_id" disabled />
             <small class="form-text text-muted">Este campo se genera automáticamente.</small>
           </div>
 
           <div class="form-group">
             <label>Nombre *</label>
             <input
+              v-model="heroe.nombre"
               type="text"
               class="form-control"
               placeholder="Nombre del héroe"
-              v-model="heroe.nombre"
               name="nombre"
               required />
           </div>
 
           <div class="form-group">
             <label>Poder</label>
-            <input type="text" class="form-control" placeholder="Poder del héroe" v-model="heroe.poder" name="poder" />
+            <input v-model="heroe.poder" type="text" class="form-control" placeholder="Poder del héroe" name="poder" />
           </div>
 
           <div class="form-group">
@@ -46,18 +46,18 @@
             <br />
             <button
               v-if="heroe.estado"
-              @click="heroe.estado = false"
               class="btn btn-outline-success w-25"
               type="button"
-              title="Vivo">
+              title="Vivo"
+              @click="heroe.estado = false">
               <font-awesome-icon icon="thumbs-up" title="Vivo" /> Vivo
             </button>
             <button
               v-if="!heroe.estado"
-              @click="heroe.estado = true"
               class="btn btn-outline-danger w-25"
               type="button"
-              title="Muerto">
+              title="Muerto"
+              @click="heroe.estado = true">
               <font-awesome-icon icon="thumbs-down" title="Muerto" /> Muerto
             </button>
           </div>
@@ -86,7 +86,7 @@
         <div v-if="error" class="alert alert-danger text-center mt-3">
           <h4 class="alert-heading">Error</h4>
           <p>{{ error }}</p>
-          <button @click="reintentar" class="btn btn-outline-danger">Reintentar</button>
+          <button class="btn btn-outline-danger" @click="reintentar">Reintentar</button>
         </div>
       </div>
     </div>
@@ -96,20 +96,13 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { API_URL } from '../../config/api';
 
 export default {
   name: 'HeroeComponent',
-  mounted() {
-    this.heroeId = this.$route.params.id;
-    this.isNuevo = this.heroeId === 'nuevo';
-
-    if (!this.isNuevo) {
-      this.getHeroeById(this.heroeId);
-    }
-  },
   data() {
     return {
-      api: 'https://crud-heroes-service.vercel.app/api',
+      api: API_URL,
       heroeId: null,
       isNuevo: false,
       cargando: false,
@@ -122,6 +115,14 @@ export default {
         estado: true, // Por defecto vivo
       },
     };
+  },
+  mounted() {
+    this.heroeId = this.$route.params.id;
+    this.isNuevo = this.heroeId === 'nuevo';
+
+    if (!this.isNuevo) {
+      this.getHeroeById(this.heroeId);
+    }
   },
   methods: {
     async getHeroeById(heroeId) {
@@ -164,11 +165,9 @@ export default {
       this.guardando = true;
 
       try {
-        let response;
-
         if (this.isNuevo) {
           // Crear nuevo héroe
-          response = await axios.post(`${this.api}/heroes`, {
+          await axios.post(`${this.api}/heroes`, {
             nombre: this.heroe.nombre.trim(),
             poder: this.heroe.poder.trim(),
             estado: this.heroe.estado,
@@ -183,7 +182,7 @@ export default {
           });
         } else {
           // Actualizar héroe existente
-          response = await axios.put(`${this.api}/heroes/${this.heroeId}`, {
+          await axios.put(`${this.api}/heroes/${this.heroeId}`, {
             nombre: this.heroe.nombre.trim(),
             poder: this.heroe.poder.trim(),
             estado: this.heroe.estado,

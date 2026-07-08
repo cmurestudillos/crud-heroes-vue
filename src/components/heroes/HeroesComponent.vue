@@ -3,14 +3,14 @@
     <h1>Listado de Heroes</h1>
     <hr />
     <div class="row">
-      <div class="col text-right">
+      <div class="col text-end">
         <router-link :to="'/heroe/nuevo'" class="btn btn-outline-primary" title="Alta">
           <font-awesome-icon icon="plus" /> Nuevo
         </router-link>
       </div>
     </div>
 
-    <table aria-describedby="tabla-heroes" v-if="!cargando && heroes.length > 0" class="table mt-3">
+    <table v-if="!cargando && heroes.length > 0" aria-describedby="tabla-heroes" class="table mt-3">
       <thead class="bg-custom">
         <tr>
           <th scope="col">Nombre</th>
@@ -28,10 +28,10 @@
             <font-awesome-icon v-if="!heroe.estado" icon="thumbs-down" class="text-danger fa-2x" title="Muerto" />
           </td>
           <td class="text-center">
-            <router-link :to="'/heroe/' + heroe._id" class="btn btn-outline-warning mr-1" title="Modificar">
+            <router-link :to="'/heroe/' + heroe._id" class="btn btn-outline-warning me-1" title="Modificar">
               <font-awesome-icon icon="edit" />
             </router-link>
-            <button class="btn btn-outline-danger" @click="borrarHeroe(heroe._id)" title="Eliminar">
+            <button class="btn btn-outline-danger" title="Eliminar" @click="borrarHeroe(heroe._id)">
               <font-awesome-icon icon="trash" />
             </button>
           </td>
@@ -40,7 +40,7 @@
       <tfoot>
         <tr>
           <td colspan="5" class="bg-custom">
-            <span><e>Copyright© - Carlos Mur</e></span>
+            <span><i>Copyright© - Carlos Mur</i></span>
           </td>
         </tr>
       </tfoot>
@@ -68,19 +68,20 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { API_URL } from '../../config/api';
 
 export default {
   name: 'HeroesComponent',
-  mounted() {
-    this.getHeroes();
-  },
   data() {
     return {
-      api: 'https://crud-heroes-service.vercel.app/api',
+      api: API_URL,
       cargando: false,
       heroes: [],
       error: null,
     };
+  },
+  mounted() {
+    this.getHeroes();
   },
   methods: {
     async getHeroes() {
