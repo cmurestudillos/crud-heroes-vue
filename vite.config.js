@@ -1,13 +1,13 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { resolve } from 'path';
+import { fileURLToPath, URL } from 'node:url';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   server: {
@@ -18,16 +18,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    // Optimización para chunks
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['vue'],
-        },
-      },
-    },
-    // Tamaño de chunk más grande para evitar warnings innecesarios
-    chunkSizeWarningLimit: 1000,
   },
   preview: {
     port: 8080,
